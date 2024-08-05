@@ -1,17 +1,17 @@
 <script lang="ts">
-import { Gantt } from '@dhx/trial-gantt'
+import { gantt } from '@dhx/trial-gantt'
 import type { Task } from '@dhx/trial-gantt'
 import '@dhx/trial-gantt/codebase/dhtmlxgantt.css'
 import type { ProjectTaskType } from '@/models/projectTask'
 import { useGanttStore } from '@/stores/ganttStore'
 import { ganttConfig } from '@/configs/ganttConfig'
-import { mapTaskToProjectTaskType } from '@/mapper/mapper'
+import { mapTaskToProjectTaskType } from '@/mappings/mapperManual'
+import { mapper } from '@/mappings/mapper'
 export default {
   name: 'GanttChart',
 
   data() {
     return {
-      ganttInstance: Gantt.getGanttInstance(),
       ganttStore: useGanttStore(),
       isLoadingFetch: false,
       isLoadingSave: false
@@ -20,23 +20,35 @@ export default {
 
   methods: {
     setupGanttConfig() {
-      this.ganttInstance.templates.parse_date = function (date) {
+      gantt.templates.parse_date = function (date) {
         return new Date(date)
       }
-      this.ganttInstance.config.row_height = 40
-      this.ganttInstance.config.server_utc = true
-      this.ganttInstance.locale.labels.section_priority = 'Priority'
-      this.ganttInstance.locale.labels.section_status = 'Status'
-      this.ganttInstance.i18n.setLocale('en')
+      gantt.plugins({
+        tooltip: true
+      })
+      gantt.config.row_height = 40
+      gantt.config.server_utc = true
+      gantt.locale.labels.section_priority = 'Priority'
+      gantt.locale.labels.section_status = 'Status'
+      gantt.i18n.setLocale('en')
 
-      this.ganttInstance.config.columns = ganttConfig.ganttChartColumns
-      this.ganttInstance.config.lightbox.sections = ganttConfig.lightboxSections
+      gantt.config.columns = ganttConfig.ganttChartColumns
+      gantt.config.lightbox.sections = ganttConfig.lightboxSections
     },
     setupGanttEvents() {
+      //tool tip
+      gantt.attachEvent('onGanttReady', function () {
+        var tooltips = gantt.ext.tooltips
+        tooltips.tooltip.setViewport(gantt.$task_data)
+      })
       //add
-      this.ganttInstance.attachEvent('onAfterTaskAdd', (id, task: Task) => {
-        const data: ProjectTaskType = mapTaskToProjectTaskType(task)
-
+      gantt.attachEvent('onAfterTaskAdd', (id, task: Task) => {
+        //const data: ProjectTaskType = mapTaskToProjectTaskType(task)
+        const data: ProjectTaskType = mapper.map<Task, ProjectTaskType>(
+          task,
+          'Task',
+          'ProjectTaskType'
+        )
         console.log(id, task)
         console.log(data)
 
@@ -44,13 +56,17 @@ export default {
       })
 
       //update
-      this.ganttInstance.attachEvent('onAfterTaskUpdate', (id, task: Task) => {
+      gantt.attachEvent('onAfterTaskUpdate', (id, task: Task) => {
+        //possbile solution is to put some logic on update to check if the previous has the same if so then use current
         const data: ProjectTaskType = mapTaskToProjectTaskType(task)
+
+        console.log(JSON.stringify(task, null, 4))
+        console.log(JSON.stringify(data, null, 4))
         this.ganttStore.updateGanttData(data)
       })
 
       //delete
-      this.ganttInstance.attachEvent('onAfterTaskDelete', (id, task: Task) => {
+      gantt.attachEvent('onAfterTaskDelete', (id, task: Task) => {
         const data: ProjectTaskType = mapTaskToProjectTaskType(task)
         this.ganttStore.deleteGanttData(data)
 
@@ -61,20 +77,25 @@ export default {
       this.setupGanttConfig()
       this.setupGanttEvents()
 
-      this.ganttInstance.init(this.$refs.ganttContainer as HTMLElement)
+      gantt.init(this.$refs.ganttContainer as HTMLElement)
     },
 
     async populateGantt() {
       this.isLoadingFetch = true
       await this.ganttStore.fetchGanttData()
       console.log(this.ganttStore.ganttData)
-      this.ganttInstance.parse(this.ganttStore.ganttData)
+      gantt.parse(this.ganttStore.ganttData)
       this.isLoadingFetch = false
     },
     async saveGantt() {
-      this.isLoadingSave = true
-      await this.ganttStore.saveGanttData()
-      this.isLoadingSave = false
+      try {
+        this.isLoadingSave = true
+        await this.ganttStore.saveGanttData()
+      } catch (exeption) {
+        console.log(exeption)
+      } finally {
+        this.isLoadingSave = false
+      }
     }
   },
 

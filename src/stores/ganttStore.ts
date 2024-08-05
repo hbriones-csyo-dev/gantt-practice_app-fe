@@ -13,8 +13,8 @@ export const useGanttStore = defineStore('gantt', {
   actions: {
     async fetchGanttData() {
       try {
-        const data = await getTasks() // Assume getTasks() returns a Promise
-        this.ganttData = data // Update the state with fetched data
+        const data = await getTasks()
+        this.ganttData = data
       } catch (error) {
         console.error('Failed to fetch Gantt data:', error)
       }
