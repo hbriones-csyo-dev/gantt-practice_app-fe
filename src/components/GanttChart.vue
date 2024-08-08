@@ -26,6 +26,7 @@ export default {
       gantt.plugins({
         tooltip: true
       })
+
       gantt.config.row_height = 40
       gantt.config.server_utc = true
       gantt.locale.labels.section_priority = 'Priority'
@@ -41,6 +42,7 @@ export default {
         var tooltips = gantt.ext.tooltips
         tooltips.tooltip.setViewport(gantt.$task_data)
       })
+
       //add
       gantt.attachEvent('onAfterTaskAdd', (id, task: Task) => {
         //const data: ProjectTaskType = mapTaskToProjectTaskType(task)
@@ -49,28 +51,28 @@ export default {
           'Task',
           'ProjectTaskType'
         )
-        console.log(id, task)
-        console.log(data)
 
         this.ganttStore.addGanttData(data)
+
+        console.log(JSON.stringify(task, null, 4))
       })
 
       //update
       gantt.attachEvent('onAfterTaskUpdate', (id, task: Task) => {
-        //possbile solution is to put some logic on update to check if the previous has the same if so then use current
         const data: ProjectTaskType = mapTaskToProjectTaskType(task)
 
-        console.log(JSON.stringify(task, null, 4))
-        console.log(JSON.stringify(data, null, 4))
         this.ganttStore.updateGanttData(data)
+
+        console.log(JSON.stringify(task, null, 4))
       })
 
       //delete
       gantt.attachEvent('onAfterTaskDelete', (id, task: Task) => {
         const data: ProjectTaskType = mapTaskToProjectTaskType(task)
+
         this.ganttStore.deleteGanttData(data)
 
-        // this.ganttStore.deleteGanttData(data)
+        console.log(JSON.stringify(task, null, 4))
       })
     },
     initGantt() {
@@ -81,11 +83,15 @@ export default {
     },
 
     async populateGantt() {
-      this.isLoadingFetch = true
-      await this.ganttStore.fetchGanttData()
-      console.log(this.ganttStore.ganttData)
-      gantt.parse(this.ganttStore.ganttData)
-      this.isLoadingFetch = false
+      try {
+        this.isLoadingFetch = true
+        await this.ganttStore.fetchGanttData()
+        gantt.parse(this.ganttStore.ganttData)
+      } catch (exception) {
+        console.log(exception)
+      } finally {
+        this.isLoadingFetch = false
+      }
     },
     async saveGantt() {
       try {

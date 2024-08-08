@@ -20,7 +20,7 @@ export async function getTasks() {
 
     // console.log(JSON.stringify(data, null, 4))
 
-    //  console.log('response status is: ', status)
+    console.log('getTasks: response status is: ', status)
 
     return ganttData
   } catch (error) {
@@ -49,7 +49,7 @@ export async function addTasks(tasks: ProjectTaskType[]) {
 
     // console.log(JSON.stringify(data, null, 4))
 
-    // console.log('response status is: ', status)
+    console.log('addTasks: response status is: ', status)
 
     return { tasks: data }
   } catch (error) {
@@ -78,7 +78,7 @@ export async function updateTasks(tasks: ProjectTaskType[]) {
 
     //  console.log(JSON.stringify(data, null, 4))
 
-    // console.log('response status is: ', status)
+    console.log('updateTasks: response status is: ', status)
 
     return { tasks: data }
   } catch (error) {
@@ -107,7 +107,7 @@ export async function deleteTasks(tasks: ProjectTaskType[]) {
 
     // console.log(JSON.stringify(data, null, 4))
 
-    //   console.log('response status is: ', status)
+    console.log('deleteTasks: response status is: ', status)
 
     return { tasks: data }
   } catch (error) {
