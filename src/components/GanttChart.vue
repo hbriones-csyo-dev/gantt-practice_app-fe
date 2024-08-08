@@ -86,9 +86,14 @@ export default {
       try {
         this.isLoadingFetch = true
         await this.ganttStore.fetchGanttData()
+        if (this.ganttStore.ganttData) {
+          gantt.message({ type: 'error', text: 'Data is empty' })
+          throw 'Data is empty'
+        }
+
         gantt.parse(this.ganttStore.ganttData)
       } catch (exception) {
-        console.log(exception)
+        console.log('Error: ', exception)
       } finally {
         this.isLoadingFetch = false
       }
@@ -98,6 +103,7 @@ export default {
         this.isLoadingSave = true
         await this.ganttStore.saveGanttData()
       } catch (exeption) {
+        gantt.message({ type: 'error', text: exeption })
         console.log(exeption)
       } finally {
         this.isLoadingSave = false
