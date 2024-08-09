@@ -1,12 +1,12 @@
-import type { ProjectTaskTypeResponse, ProjectTaskType } from '@/models/projectTask'
+import type { ProjectTaskLinkType, ProjectTaskLinkTypeResponse } from '@/models/projectTaskLink'
 
 import axios from 'axios'
 
 //get data
-export async function getTasks() {
+export async function getTaskLinks() {
   try {
     const { data, status } = await axios.get(
-      `${import.meta.env.VITE_API_BASE_URL}/ProjectTask/GetProjectTask`,
+      `${import.meta.env.VITE_API_BASE_URL}/ProjectTaskLink/GetAllProjectTaskLink`,
       {
         headers: {
           Accept: 'application/json'
@@ -14,15 +14,15 @@ export async function getTasks() {
       }
     )
 
-    const ganttData: ProjectTaskTypeResponse = {
-      tasks: data
-    }
+    // const ganttData: ProjectTaskLinkTypeResponse = {
+    //   links: data
+    // }
 
-    //console.log(JSON.stringify(data, null, 4))
+    // console.log(JSON.stringify(data, null, 4))
 
-    console.log('getTasks: response status is: ', status)
+    console.log('getTaskLinks: response status is: ', status)
 
-    return ganttData
+    return { links: data }
   } catch (error) {
     if (axios.isAxiosError(error)) {
       throw new Error(error.message)
@@ -34,11 +34,11 @@ export async function getTasks() {
 }
 
 //add data
-export async function addTasks(tasks: ProjectTaskType[]) {
+export async function addTaskLinks(tasks: ProjectTaskLinkType[]) {
   try {
     console.log(JSON.stringify(tasks, null, 4))
     const { data, status } = await axios.post(
-      `${import.meta.env.VITE_API_BASE_URL}/ProjectTask/AddTask`,
+      `${import.meta.env.VITE_API_BASE_URL}/ProjectTaskLink/AddProjectTaskLink`,
       tasks,
       {
         headers: {
@@ -49,7 +49,7 @@ export async function addTasks(tasks: ProjectTaskType[]) {
 
     // console.log(JSON.stringify(data, null, 4))
 
-    console.log('addTasks: response status is: ', status)
+    console.log('addTaskLinks: response status is: ', status)
 
     return { tasks: data }
   } catch (error) {
@@ -63,11 +63,11 @@ export async function addTasks(tasks: ProjectTaskType[]) {
 }
 
 //update data
-export async function updateTasks(tasks: ProjectTaskType[]) {
+export async function updateTaskLinks(tasks: ProjectTaskLinkType[]) {
   try {
     console.log(JSON.stringify(tasks, null, 4))
     const { data, status } = await axios.patch(
-      `${import.meta.env.VITE_API_BASE_URL}/ProjectTask/UpdateTask`,
+      `${import.meta.env.VITE_API_BASE_URL}/ProjectTaskLink/UpdateProjectTaskLink`,
       tasks,
       {
         headers: {
@@ -78,7 +78,7 @@ export async function updateTasks(tasks: ProjectTaskType[]) {
 
     //  console.log(JSON.stringify(data, null, 4))
 
-    console.log('updateTasks: response status is: ', status)
+    console.log('updateTaskLinks: response status is: ', status)
 
     return { tasks: data }
   } catch (error) {
@@ -92,11 +92,11 @@ export async function updateTasks(tasks: ProjectTaskType[]) {
 }
 
 //delete
-export async function deleteTasks(tasks: ProjectTaskType[]) {
+export async function deleteTaskLinks(tasks: ProjectTaskLinkType[]) {
   try {
     console.log(JSON.stringify(tasks, null, 4))
     const { data, status } = await axios.delete(
-      `${import.meta.env.VITE_API_BASE_URL}/ProjectTask/DeleteProjectTask`,
+      `${import.meta.env.VITE_API_BASE_URL}/ProjectTaskLink/DeleteProjectTaskLink`,
       {
         headers: {
           'Content-Type': 'application/json'
@@ -107,7 +107,7 @@ export async function deleteTasks(tasks: ProjectTaskType[]) {
 
     // console.log(JSON.stringify(data, null, 4))
 
-    console.log('deleteTasks: response status is: ', status)
+    console.log('deleteTaskLinks: response status is: ', status)
 
     return { tasks: data }
   } catch (error) {

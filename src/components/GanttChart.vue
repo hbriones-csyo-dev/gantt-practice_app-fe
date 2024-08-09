@@ -1,12 +1,13 @@
 <script lang="ts">
 import { gantt } from '@dhx/trial-gantt'
-import type { Task } from '@dhx/trial-gantt'
+import type { Task, Link } from '@dhx/trial-gantt'
 import '@dhx/trial-gantt/codebase/dhtmlxgantt.css'
 import type { ProjectTaskType } from '@/models/projectTask'
 import { useGanttStore } from '@/stores/ganttStore'
 import { ganttConfig } from '@/configs/ganttConfig'
 import { mapTaskToProjectTaskType } from '@/mappings/mapperManual'
 import { mapper } from '@/mappings/mapper'
+import type { ProjectTaskLinkType } from '@/models/projectTaskLink'
 export default {
   name: 'GanttChart',
 
@@ -74,6 +75,58 @@ export default {
 
         console.log(JSON.stringify(task, null, 4))
       })
+
+      //links
+
+      //add
+      gantt.attachEvent('onAfterLinkAdd', (id, link) => {
+        const data: ProjectTaskLinkType = mapper.map<Link, ProjectTaskLinkType>(
+          link,
+          'Link',
+          'ProjectTaskLinkType'
+        )
+
+        //this.ganttStore.addGanttData(data)
+        this.ganttStore.addGanttDataLink(data)
+        //  console.log(JSON.stringify(link, null, 4))
+      })
+
+      //update
+      gantt.attachEvent('onAfterLinkUpdate', (id, link) => {
+        const data: ProjectTaskLinkType = mapper.map<Link, ProjectTaskLinkType>(
+          link,
+          'Link',
+          'ProjectTaskLinkType'
+        )
+
+        //this.ganttStore.addGanttData(data)
+        this.ganttStore.updateGanttDataLink(data)
+        //  console.log(JSON.stringify(link, null, 4))
+      })
+
+      //delete
+      gantt.attachEvent('onAfterLinkDelete', (id, link) => {
+        const data: ProjectTaskLinkType = mapper.map<Link, ProjectTaskLinkType>(
+          link,
+          'Link',
+          'ProjectTaskLinkType'
+        )
+
+        //this.ganttStore.addGanttData(data)
+        this.ganttStore.deleteGanttDataLink(data)
+        //  console.log(JSON.stringify(link, null, 4))
+      })
+
+      //lightbox validation
+      gantt.attachEvent('onLightboxSave', (id, task, is_new) => {
+        const text: String = task.text
+
+        if (text.length >= 50) {
+          gantt.alert('The description cannot be more than 50 characters. Please Try again.')
+          return false
+        }
+        return true
+      })
     },
     initGantt() {
       this.setupGanttConfig()
@@ -85,8 +138,9 @@ export default {
     async populateGantt() {
       try {
         this.isLoadingFetch = true
+
         await this.ganttStore.fetchGanttData()
-        if (this.ganttStore.ganttData) {
+        if (!this.ganttStore.ganttData) {
           gantt.message({ type: 'error', text: 'Data is empty' })
           throw 'Data is empty'
         }
