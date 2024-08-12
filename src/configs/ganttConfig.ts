@@ -1,16 +1,16 @@
 import type { Task } from '@dhx/trial-gantt'
 
 const optsPriority = [
-  { key: 1, label: 'High' },
-  { key: 2, label: 'Normal' },
-  { key: 3, label: 'Low' }
+  { key: 'High', label: 'High' },
+  { key: 'Normal', label: 'Normal' },
+  { key: 'Low', label: 'Low' }
 ]
 
 const optsStatus = [
-  { key: 1, label: 'Unstarted' },
-  { key: 2, label: 'Delay' },
-  { key: 3, label: 'Done' },
-  { key: 4, label: 'In Progress' }
+  { key: 'Unstarted', label: 'Unstarted' },
+  { key: 'Delay', label: 'Delay' },
+  { key: 'Done', label: 'Done' },
+  { key: 'In Progress', label: 'In Progress' }
 ]
 
 export const ganttConfig = {
@@ -22,7 +22,7 @@ export const ganttConfig = {
       type: 'select',
       map_to: 'priority',
       options: optsPriority,
-      default_value: 2
+      default_value: 'Normal'
     },
     {
       name: 'status',
@@ -30,7 +30,7 @@ export const ganttConfig = {
       type: 'select',
       map_to: 'status',
       options: optsStatus,
-      default_value: 1
+      default_value: 'Unstarted'
     },
     { name: 'time', height: 72, type: 'duration', map_to: 'auto' }
   ],
@@ -42,34 +42,12 @@ export const ganttConfig = {
       name: 'status',
       label: 'Status',
       align: 'center',
-      min_width: 150,
-      template: (obj: Task) => {
-        switch (obj.status) {
-          case '1':
-            return 'Unstarted'
-          case '2':
-            return 'Delay'
-          case '3':
-            return 'Done'
-          case '4':
-            return 'In Progress'
-        }
-      }
+      min_width: 150
     },
     {
       name: 'priority',
       label: 'Priority',
-      align: 'center',
-      template: (obj: Task) => {
-        switch (obj.priority) {
-          case '1':
-            return 'High'
-          case '2':
-            return 'Normal'
-          case '3':
-            return 'Low'
-        }
-      }
+      align: 'center'
     },
     { name: 'duration', label: 'Duration', align: 'center' },
 
